@@ -29,4 +29,6 @@ we can find this one by using console.log(process.env.MONGO_URL);
 Now commit
 ----------------------------------------------------------------
 
-First Stage changes by pressing the + button
+> First Stage changes by pressing the + button
+
+> Then give message to the commit
