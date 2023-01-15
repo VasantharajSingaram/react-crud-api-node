@@ -20,6 +20,10 @@ First install npm i dotenv
 
 > dotenv.config()
 
+> Paste the mongo url MONGO_URL = http..... without "" double quotes then.
+
+> replace the mongo url with process.env.MONGO_URL; like next step
+
 > const MONGO_URL = process.env.MONGO_URL; // process.env.MONGO_URL is a environment variable 
 we can find this one by using console.log(process.env.MONGO_URL);
 
@@ -44,3 +48,47 @@ will not be available in the host website so we want to change the port
 const PORT = process.env.PORT;
 
 > Then for run the app in the local host just add PORT=4000 in the .env file
+
+Versel
+----------------------------------------------------------------
+
+> Login with Github
+
+> New project
+
+> Select from repositary list
+
+> Click import
+
+> Go to Environmental variable
+
+> Paste MONGO_URL in the name bar the Paste mongo url without codes in the value bar then deploy Click
+
+> After deployed confetti will flow then click go to dashboard  
+
+> If we visit the page (click visit) the page will be like html file it will displayed like html
+
+> Because we didnt say to the versel that this is a node project. We want to say to the versel
+that this is a node project
+
+> so create vercel.json file in vscode
+
+> paste this
+
+{
+    "builds": [
+      {
+        "src": "./index.js",
+        "use": "@vercel/node"
+      }
+    ],
+    "routes": [
+      {
+        "src": "/(.*)",
+        "dest": "/index.js"
+      }
+    ]
+ }
+
+ > then save and push
+
