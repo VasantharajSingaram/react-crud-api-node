@@ -32,3 +32,15 @@ Now commit
 > First Stage changes by pressing the + button
 
 > Then give message to the commit
+
+
+Deploying 
+----------------------------------------------------------------
+
+> Check the pckage.json "start": "node index.js" is available
+
+> Then change the port because the port we are using locally is 4000 but the same port 
+will not be available in the host website so we want to change the port
+const PORT = process.env.PORT;
+
+> Then for run the app in the local host just add PORT=4000 in the .env file
