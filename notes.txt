@@ -1,0 +1,32 @@
+
+Hide Node modules
+----------------------------------------------------------------
+
+Before commit we just want to create .gitignore file and add node modules to avoid the huge number of files to be added
+// .gitignore
+
+If the node_modules is not find in the git hub just enter npm install in terminal and install
+because the node_modules will automatically will be install in the app according to the dependencies we are used.
+
+
+Hide The UserName Password of MongoDb 
+----------------------------------------------------------------
+
+First install npm i dotenv
+
+> Create a .env file in the root of your project:
+
+> import * as dotenv from 'dotenv'
+
+> dotenv.config()
+
+> const MONGO_URL = process.env.MONGO_URL; // process.env.MONGO_URL is a environment variable 
+we can find this one by using console.log(process.env.MONGO_URL);
+
+> Then add .env to the .ignore so the env file will be hided.
+
+
+Now commit
+----------------------------------------------------------------
+
+First Stage changes by pressing the + button
