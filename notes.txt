@@ -92,3 +92,37 @@ that this is a node project
 
  > then save and push
 
+
+ Express routes
+ ----------------------------------------------------------------
+
+ > We need to use express routes to make the app more clear like arranging the components.
+
+ > First create routes folder and then create users.route.js file in the routes folder.
+
+ > Move the app.get,put,post,delete codes into the users.route.js file.
+
+ > Give a connection for the users.route.js file to index.js.
+
+ > We need to say to the app that if /users or /users/:id means go to the perspective files by
+ like this app.use('/users', usersRouter)
+
+ > import express from "express"; in the users.route.js file
+
+ > Then write const route = express.Router(); in the users.route.js file.
+
+ > Change where and all app.get, app.post... to router.get, router.post in the users.route.js file.
+
+ > Then add the line   export default router; at the end of the route.js file.
+
+ > Amd import usersRouter from "./routes/users.route.js"; in the index.js file.
+
+ > In index.js file we created app.use("/users", usersRouter); know so already we have mentioned 
+ /users in the index.js file itself so we can avoid the /users in the codes router.get("/users, async...)
+ so remove users from the code. It will look like this.
+ 
+ * router.get("/", async function (request, response)
+ * router.post("/", async function (request, response)
+
+ > Then we should export { client }; (write at the end  from the index.js file and import { client } from "../index.js";
+
