@@ -3,7 +3,7 @@ import express from "express";
 
 const router = express.Router();
 
-import { client } from "../index.js";
+import { getUsers, getUsersById, createUsers, deleteUsersById, updateUserById } from "../services/users.service.js";
 
 
 router.get("/", async function (request, response) {  // Method: 2
@@ -14,7 +14,7 @@ router.get("/", async function (request, response) {  // Method: 2
     
     console.log(request.query);
       // Cursor = Pagination |  Cursor -> Array | toArray()
-      const users = await client.db('crudApi').collection('users').find(request.query).toArray();
+      const users = await getUsers(request);
       // console.log(users);
         response.send(users);
       });
@@ -26,7 +26,7 @@ router.get("/", async function (request, response) {  // Method: 2
     
     router.get("/:id", async function (request, response) {
       const { id } = request.params;
-      const user = await client.db('crudApi').collection('users').findOne({ id: id})
+      const user = await getUsersById(id);
     
       user ? response.send(user):response.status(404).send({message: "user not found"});
     });
@@ -38,8 +38,8 @@ router.get("/", async function (request, response) {  // Method: 2
     // so app.use -> Intercepts -> applies express.json() (Inbuilt Middleware)
     router.post("/", async function (request, response) {
       const data = request.body;
-      console.log(data);
-      const result = await client.db("crudApi").collection("users").insertMany(data)
+      // console.log(data);
+      const result = await createUsers(data);
       response.send(result);
     });
     
@@ -47,8 +47,8 @@ router.get("/", async function (request, response) {  // Method: 2
     // Delete a user by Id
     router.delete("/:id", async function (request, response) {
       const { id } = request.params;
-      const result = await client.db('crudApi').collection('users').deleteOne({ id: id})
-      console.log(result);
+      const result = await deleteUsersById(id);
+      // console.log(result);
       result.deletedCount > 0
       ? response.send({ message: "user deleted successfully"})
       :response.status(404).send({message: "user not found"});
@@ -65,11 +65,13 @@ router.get("/", async function (request, response) {  // Method: 2
     
       const data = request.body;
     
-      const result = await client.db('crudApi').collection('users').updateOne({ id: id}, { $set: data})
+      const result = await updateUserById(id, data);
     
-      console.log(result);
+      // console.log(result);
     
       response.send(result);
     });
 
     export default router;
+
+

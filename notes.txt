@@ -126,3 +126,49 @@ that this is a node project
 
  > Then we should export { client }; (write at the end  from the index.js file and import { client } from "../index.js";
 
+
+
+
+Changing DB connections to function
+----------------------------------------------------------------
+
+> Because we are putting the db connection files to another folder called services to make the app even
+better
+
+EX:
+
+router.get("/", async function (request, response) { 
+
+    if(request.query.age){
+      request.query.age = +request.query.age  
+    }
+
+      const users = await client.db('crudApi').collection('users').find(request.query).toArray();
+        response.send(users);
+      });
+
+> Just select from await users to the toArray() without semicolon and click bulb and Select
+extract to function in module scope and then name it as getUsers
+
+> Db mehtods will be automatically created at the bottom
+
+> Create a new folder services.
+
+> Then create users.service.js file in the services folder
+
+> Then select all the function async functions and click the bulb and move to new files rest it will
+automatically it will put in the getusers.js file in the routes folder.
+
+> Dont forget to change import line end (getUsers) to getUsers.js... because it will not be there in users.routes.js
+
+> Then rename the getUsers.js file to users.service.js before that delete the users.services.js file which
+we created in the services folder before.
+
+> It will automatically change the name of the file which is imported in every files. So dont worry...
+
+> Then drag the users.service.js file from routes folder to the services folder. Then it will 
+automatcally change the path of the files in every files. So dont worry...
+
+Thats all we can create another file system like another databases... first create like users.route.js files
+then create users.service.js files just remember i am only saying another database... we done it for only
+users but in job and all we will have more database...
