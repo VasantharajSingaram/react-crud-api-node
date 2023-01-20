@@ -1,12 +1,13 @@
 
 import express from "express";
+import { auth } from "../middleware/auth.js";
 
 const router = express.Router();
 
 import { getUsers, getUsersById, createUsers, deleteUsersById, updateUserById } from "../services/users.service.js";
 
 
-router.get("/", async function (request, response) {  // Method: 2
+router.get("/",  async function (request, response) {  // Method: 2
 
     if(request.query.age){
       request.query.age = +request.query.age   // => changing the value to the number because it is in string
@@ -18,13 +19,13 @@ router.get("/", async function (request, response) {  // Method: 2
       // console.log(users);
         response.send(users);
       });
-    
+     
     
     
     
     //  get by id only
     
-    router.get("/:id", async function (request, response) {
+    router.get("/:id", auth, async function (request, response) {
       const { id } = request.params;
       const user = await getUsersById(id);
     
@@ -71,6 +72,8 @@ router.get("/", async function (request, response) {  // Method: 2
     
       response.send(result);
     });
+
+    
 
     export default router;
 

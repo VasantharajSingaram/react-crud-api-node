@@ -1,0 +1,104 @@
+Create a api local
+----------------------------------------------------------------
+
+const mobiles = [
+  {
+    "model": "OnePlus 9 5G",
+    "img": "https://m.media-amazon.com/images/I/61fy+u9uqPL._SX679_.jpg",
+    "company": "Oneplus"
+    },
+    {
+    "model": "Iphone 13 mini",
+    "img": "https://store.storeimages.cdn-apple.com/4668/as-images.apple.com/is/iphone-13-mini-blue-select-2021?wid=470&hei=556&fmt=jpeg&qlt=95&.v=1645572315986",
+    "company": "Apple"
+    },
+    {
+    "model": "Samsung s21 ultra",
+    "img": "https://m.media-amazon.com/images/I/81kfA-GtWwL._SY606_.jpg",
+    "company": "Samsung"
+    },
+    {
+    "model": "Xiomi mi 11",
+    "img": "https://m.media-amazon.com/images/I/51K4vNxMAhS._AC_SX522_.jpg",
+    "company": "Xiomi"
+    }
+    
+];
+
+app.get('/mobiles', (request, response) => {
+  response.send(mobiles); 
+})
+
+Output will be in "http://localhost:4000/mobiles"
+
+Fetching problem
+----------------------------------------------------------------
+
+> We need cors because cors is for white listing like who can access out api and who cannot.
+
+> Install
+https://www.npmjs.com/package/cors
+from this...
+
+> Import import cors from 'cors';
+
+> Write the code
+app.use(cors()); below the app.use(express.json());
+
+Send the data to mongodb atlas and get from mongodb by post Method
+----------------------------------------------------------------------
+
+> Before we are using the data from local db
+
+const mobiles = [
+  {
+    "model": "OnePlus 9 5G",
+    "img": "https://m.media-amazon.com/images/I/61fy+u9uqPL._SX679_.jpg",
+    "company": "Oneplus"
+    },
+    {
+    "model": "Iphone 13 mini",
+    "img": "https://store.storeimages.cdn-apple.com/4668/as-images.apple.com/is/iphone-13-mini-blue-select-2021?wid=470&hei=556&fmt=jpeg&qlt=95&.v=1645572315986",
+    "company": "Apple"
+    },
+    {
+    "model": "Samsung s21 ultra",
+    "img": "https://m.media-amazon.com/images/I/81kfA-GtWwL._SY606_.jpg",
+    "company": "Samsung"
+    },
+    {
+    "model": "Xiomi mi 11",
+    "img": "https://m.media-amazon.com/images/I/51K4vNxMAhS._AC_SX522_.jpg",
+    "company": "Xiomi"
+    }
+    
+];
+
+app.get('/mobiles', (request, response) => {
+  response.send(mobiles); 
+})
+
+> Then we are sending the data from the postman to the mongodb from post method send
+the data from body - raw - jason.
+
+> Then create a code to post the data to the mongodb.
+app.post('/mobiles', async (request, response) => {
+  const data = request.body; // sending the data from the post man on the body
+  //db.mobiles.insertMany(data) // sending the data from the node to mongodb its mongo command below is node command
+  const result = await client.db('mobiles-ecom').collection('mobiles').insertMany(data);
+  response.send(result);
+})
+
+> Then now paste the data mobiles on the create mobiles in postman on the body - raw - json and hit send.
+
+> Then now we are fetching the data from the mongo db to the node
+
+// this is from mongodb atlas
+
+app.get('/mobiles', async (request, response) => {
+  const data = request.body; // sending the data from the post man on the body
+  //db.mobiles.insertMany(data) // sending the data from the node to mongodb its mongo command below is node command
+  const result = await client.db('mobiles-ecom').collection('mobiles').find({}).toArray();
+  // find always give cursor so adding .toArray at the end find
+  response.send(result);
+})

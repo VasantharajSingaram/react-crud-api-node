@@ -1,0 +1,139 @@
+Notes - 3
+
+Login Notes
+----------------------------------------------------------------
+
+> Copy all the code from signup.route.js
+
+   router.post("/signup", async function (request, response) {
+      const { username, password } = request.body;
+
+      const userFromDB = await getUserByName(username);
+
+      // const hashedPassword = await generateHashedPassword(password)
+      // // db.userssignup.insertOne(data);
+      // const result = await createUser({ 
+      //   username: username,
+      //   password : hashedPassword
+      // });
+      // response.send(result);
+      console.log(userFromDB);
+
+      if(userFromDB){
+        response.status(400).send({message: 'User already exists'})
+      } else if(password.length < 8){
+        response.status(400).send({message: 'Password must be at least 8 characters'});
+      }
+      else {
+           const hashedPassword = await generateHashedPassword(password)
+      
+      const result = await createUser({ 
+        username: username,
+        password : hashedPassword
+      });
+      response.send(result);
+      }
+    });
+
+    and paste it in the same signup.route.js file below the upper codes and change these
+
+       router.post("/login", async function (request, response) {
+      const { username, password } = request.body;
+
+      const userFromDB = await getUserByName(username);
+
+  
+      console.log(userFromDB);
+
+      if(!userFromDB){ // if user is not found
+        response.status(401).send({message: 'Invalid Credentials'});
+      } 
+    }); 
+
+    > Go to Postman and use the link http://localhost:4000/signup/login // -> signup is collection login is login page. 
+
+    > give some username and password which is not signed up and hit send the answer will be Invalid Credentials.
+
+
+    Now we want to check whether username and password are matching to let the user in.
+    ------------------------------------------------------------------------------------------------
+
+    > Write the code after the if(!userFromDB) // this is for username not found
+
+     router.post("/login", async function (request, response) {
+      const { username, password } = request.body;
+      const userFromDB = await getUserByName(username);
+      console.log(userFromDB);
+      if(!userFromDB){ // if user is not found
+        response.status(401).send({message: 'Invalid Credentials'}); // 401 unauthorized
+      } else { // Checking weather username and password matches.
+        const storedDBPassword = userFromDB.password;
+        const isPasswordCheck = await bcrypt.compare(password, storedDBPassword);
+        console.log(isPasswordCheck);
+      }
+    });
+
+    > Then if username and password matches, for that we want to write this code;
+
+       router.post("/login", async function (request, response) {
+      const { username, password } = request.body;
+      const userFromDB = await getUserByName(username);
+      console.log(userFromDB);
+      if(!userFromDB){ // if user is not found
+        response.status(401).send({message: 'Invalid Credentials'}); // 401 unauthorized
+      } else { // Checking weather username and password matches.
+        const storedDBPassword = userFromDB.password;
+        const isPasswordCheck = await bcrypt.compare(password, storedDBPassword);
+        console.log(isPasswordCheck);
+
+        if (isPasswordCheck) {
+          response.send({message: "Success!"}) // For successful login
+
+        } else {
+          response.status(401).send({message: "Invalid password"});  // For invalid password
+        }
+      }
+    });
+
+
+    Give the Token (Assurance) that the user successful enter the corrent user name and password and entered.
+    --------------------------------------------------------------------------------------------------------------------
+
+    > install $ npm i jsonwebtoken
+
+    > then import jwt from "jsonwebtoken"; inthe signup.route.js
+
+    > then write the below code
+
+     router.post("/login", async function (request, response) {
+      const { username, password } = request.body;
+      const userFromDB = await getUserByName(username);
+      console.log(userFromDB);
+      if(!userFromDB){ // if user is not found
+        response.status(401).send({message: 'Invalid Credentials'}); // 401 unauthorized
+      } else { // Checking weather username and password matches.
+        const storedDBPassword = userFromDB.password;
+        const isPasswordCheck = await bcrypt.compare(password, storedDBPassword);
+        console.log(isPasswordCheck);
+
+        if (isPasswordCheck) {
+          const token = jwt.sign({id: userFromDB._id}, process.env.SECRET_KEY ) // We need to send the secret key(token) from node side only _id is the unique value see in mongoDBAtlas
+          response.send({message: "Success!", token: token}) // For successful login // Give the Token when successful
+
+        } else {
+          response.status(401).send({message: "Invalid password"});  // For invalid password
+        }
+      }
+    });
+    
+    export default router;
+
+    > Then go to postman and send with correct username and password u will get the token like this
+    {
+    "message": "Success!",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzYzUwMzBhODI0ZGFiMTBhMzA5NGM2ZiIsImlhdCI6MTY3Mzg4MDA3Nn0.oHCT7SWSXnZlyA1sB0fa3rdSpK0NydnFr_PF3_rmQOE"
+    }
+
+
+
+

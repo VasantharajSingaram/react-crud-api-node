@@ -8,6 +8,13 @@ import * as dotenv from 'dotenv'
 
 import usersRouter from "./routes/users.route.js";
 
+import signupRouter from "./routes/signup.route.js";
+
+import bcrypt from 'bcrypt';
+
+import cors from 'cors';
+import { auth } from "./middleware/auth.js";
+
 dotenv.config()
 
 const app = express();
@@ -34,78 +41,11 @@ await client.connect();
 
 console.log("Mongo is connected !!!"); // For our use
 
-// local dtabase
-// const users = [
-//     {
-    
-//           "id": "01",
-//           "profilePic": "https://cdn.fansshare.com/image/robertdowneyjr/tony-stark-hot-151199060.jpg",
-//           "userId" : "00abc1",
-//           "fname": "Tony",
-//           "lname": "Stark",
-//           "age": "48",
-//         },
-//         {
-//         "id": "02",
-//         "profilePic": "http://t2.gstatic.com/licensed-image?q=tbn:ANd9GcQM90dxKi2Ng2PB6TZlqUZkCgwPFG87v70NkDySutfbkBSDN525VUdBZALNdyDdrqG2IgS3fZD-V5VzP1k",
-//         "userId" : "00abc2",
-//         "fname": "Peter",
-//         "lname": "Parker",
-//         "age": "24",
-//       },
-//       {
-//         "id": "03",
-//         "profilePic": "https://media.wired.com/photos/627b4658323db22d6ba1fed1/master/pass/Wanda-Dr-Strange-Multiverse-Madness-Culture.jpg",
-//         "userId" : "00abc3",
-//         "fname": "Wanda",
-//         "lname": "Maixmoff",
-//         "age": "28",
-//       },
-//       {
-//         "id": "04",
-//         "profilePic": "https://wallpaperaccess.com/full/1554800.jpg",
-//         "userId" : "00abc4",
-//         "fname": "Gamora",
-//         "lname": "Zen",
-//         "age": "29",
-//       },
-//       {
-//         "id": "05",
-//         "profilePic": "https://www.denofgeek.com/wp-content/uploads/2021/01/webstory-captain-america-cover03.jpg",
-//         "userId" : "00abc5",
-//         "fname": "Steve",
-//         "lname": "Rogers",
-//         "age": "105",
-//       },
-//       {
-//         "id": "06",
-//         "profilePic": "https://assets-prd.ignimgs.com/2022/07/01/thorloveandthunder-blorgoll-01-1656709247130.jpg",
-//         "userId" : "00abc6",
-//         "fname": "Thor",
-//         "lname": "Odinson",
-//         "age": "1500",
-//       },
-//       {
-//           "id": "07",
-//           "profilePic": "https://media.newyorker.com/photos/5a875e3f33aebd0cab9bab12/2:2/w_1079,h_1079,c_limit/Brody-Passionate-Politics-Black-Panther.jpg",
-//           "userId" : "00abc7",
-//           "fname": "Black",
-//           "lname": "Panther",
-//           "age": "43",
-//       },
-//       {
-//           "id": "08",
-//           "profilePic": "https://media.vogue.fr/photos/5c7ed01e08858f0dc0e2d287/2:3/w_2560%2Cc_limit/capmarvel.jpg",
-//           "userId" : "00abc8",
-//           "fname": "Captain",
-//           "lname": "Marvel",
-//           "age": "30",
-//       }   
-//       ];
+// middleware - express.json() (inbuilt middleware) - JSON - JS Object
+// app.use -> Intercepts -> applies express.json() (inbuilt middleware)
 
-
-
-app.use(express.json());
+app.use(express.json()); // for showing data
+app.use(cors()) // for showing data
 
 
 // get home page
@@ -115,10 +55,80 @@ app.get("/", function (request, response) {
 
 
 
-app.use("/users", usersRouter)
+app.use("/users", usersRouter);
+app.use("/signup", signupRouter);
+
+// const mobiles = [
+//   {
+//     "model": "OnePlus 9 5G",
+//     "img": "https://m.media-amazon.com/images/I/61fy+u9uqPL._SX679_.jpg",
+//     "company": "Oneplus"
+//     },
+//     {
+//     "model": "Iphone 13 mini",
+//     "img": "https://store.storeimages.cdn-apple.com/4668/as-images.apple.com/is/iphone-13-mini-blue-select-2021?wid=470&hei=556&fmt=jpeg&qlt=95&.v=1645572315986",
+//     "company": "Apple"
+//     },
+//     {
+//     "model": "Samsung s21 ultra",
+//     "img": "https://m.media-amazon.com/images/I/81kfA-GtWwL._SY606_.jpg",
+//     "company": "Samsung"
+//     },
+//     {
+//     "model": "Xiomi mi 11",
+//     "img": "https://m.media-amazon.com/images/I/51K4vNxMAhS._AC_SX522_.jpg",
+//     "company": "Xiomi"
+//     }
+    
+// ];
+
+// this is from local storage
+// app.get('/mobiles', (request, response) => {
+//   response.send(mobiles); 
+// })
+
+
+
+
+// this is sending data to the mongo atlas
+
+// app.post('/mobiles', async (request, response) => {
+//   const data = request.body; // sending the data from the post man on the body
+//   //db.mobiles.insertMany(data) // sending the data from the node to mongodb its mongo command below is node command
+//   const result = await client.db('mobiles-ecom').collection('mobiles').insertMany(data);
+//   response.send(result);
+// })
+
+
+
+// this is from mongodb atlas
+
+// app.get('/mobiles', auth, async (request, response) => {
+//   const data = request.body; // sending the data from the post man on the body
+//   //db.mobiles.insertMany(data) // sending the data from the node to mongodb its mongo command below is node command
+//   const result = await client.db('mobiles-ecom').collection('mobiles').find({}).toArray();
+//   // find alwawys give cursor so adding .toArray at the end find
+//   response.send(result);
+// })
+
+app.post('/pizzo', async (request, response) => {
+  const data = request.body; 
+  const result = await client.db('pizzo').collection('pizzas').insertMany(data);
+  response.send(result);
+})
+
+app.get('/pizzo', async (request, response) => {
+  const data = request.body; 
+  const result = await client.db('pizzo').collection('pizzas').find({}).toArray();
+  response.send(result);
+})
 
 
 app.listen(PORT, () => console.log(`The server started in: ${PORT} ✨✨`));
 
 
-export { client };
+
+
+
+
+export { client }; 

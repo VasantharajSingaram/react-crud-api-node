@@ -1,0 +1,169 @@
+Notes - 1
+
+node.bcrypt.js
+ ----------------------------------------------------------------
+
+ > First install npm i bcrypt
+
+ > Go to index.js file and import the bcrypt import bcrypt from 'bcrypt';
+
+ > Then create a function before the export { client }
+
+ async function generateHashedPassword(password){
+    const NO_OF_ROUNDS = 10; // How many rounds means how much secured
+    const salt = await bcrypt.genSalt(NO_OF_ROUNDS); // this is method name
+    const hashedPassword = await bcrypt.hash(password, salt);
+    console.log(salt);
+    console.log(hashedPassword);
+ }
+
+generateHashedPassword("password@123");
+
+> Now create an api for this signup process go to postman and duplicate post method users by id and 
+change to signup - .../users/signup
+
+> Then create signup.route.js file in routes folder and signup.service.js file in service folder.
+
+> To be easy we can duplicate the users.route.js and delete all the app.get and only keep the post method
+because for signup we want to use the post method only...
+
+> And write the code app.use("/signup", signupRouter); below the app.use("/users", usersRouter); and save
+and check
+
+> And then import signupRouter from "./routes/signup.route.js"; in the index file (write the code)
+
+> Main think in the postman we have created another api in vscode node so we should use the local host like this
+http://localhost:4000/signup/signup // => here database db is crud-api only and collections are users and signup
+
+but others will look like this
+http://localhost:4000/users/03 
+
+know the differences...
+
+> Then insert the signup data to the api db by writing this line // const result = await createUser(data);
+
+> This createUser is a function
+
+> Then delete other async functions except create from the signup.service.js that we duplicated the users.service.js and 
+renamed it.
+
+> Change async function name createUsersSignup because we named createUsersSignup in the signup.route.js file 
+in the routes folder.
+
+> Then we need to change the collection or create another collection under the same db...
+here return await client.db("crudApi").collection("userssignup").inserOne(data); => we changed the 
+collection.
+
+> Now import { createUsersSignup } from "../services/signup.service.js"; in the signup.route.js file.. here
+is the trick const result = await createUsersSignup(data); just delete the createUsersSignup last p and 
+re-enter the last p then automatically import { createUsersSignup } from "../services/signup.service.js"; line
+will be imported 
+ 
+> Now check the service in postman with the local host http://localhost:4000/signup/signup the result will be like this
+{
+    "acknowledged": true,
+    "insertedId": "63c4fd24af20ab7661222bf7"
+}
+
+> Then check the mongodb atlas database collection you will see signup collection will be appearing in the crud api database.
+
+> Cut the function 
+async function generateHashedPassword(password){
+  const NO_OF_ROUNDS = 10; // How many rounds means how much secured
+  const salt = await bcrypt.genSalt(NO_OF_ROUNDS); // this is method name
+  const hashedPassword = await bcrypt.hash(password, salt);
+  console.log(salt);
+  console.log(hashedPassword);
+}
+and paste it in the signup.service.js file and add export in front of the function and add import bcrypt also. because the database managing
+person can see the passwords of the user so we need to hide the password by hashedPassword method.
+
+> Then change the function code to this
+export async function generateHashedPassword(password){
+  const NO_OF_ROUNDS = 10; // How many rounds means how much secured
+  const salt = await bcrypt.genSalt(NO_OF_ROUNDS); // this is method name
+  const hashedPassword = await bcrypt.hash(password, salt);
+  console.log(salt);
+  console.log(hashedPassword);
+  return hashedPassword;
+}
+
+> Then change the old router.post in the signup.router.js file to this...
+   router.post("/signup", async function (request, response) {
+      const { username, password } = request.body;
+
+      const hashedPassword = await generateHashedPassword(password)
+      // db.userssignup.insertOne(data);
+      const result = await createUser({ 
+        username: username,
+        password : hashedPassword
+      });
+      response.send(result);
+      console.log(data);
+    });
+
+> Now  send username and password from postman and see the result
+
+> Now check in mongodb atlas you will find the password is hashed.
+
+> Now there is problem that if a user signup second time with the same username means it will accept so we want to block the user to
+use the same username which used before.
+
+> write a code in signup.router.js ->  const userFromDB = await getUserByName(username); this in the middle of the 
+router.post after const {username, password} = request.body; => it will look like this ->
+
+
+    router.post("/signup", async function (request, response) {
+      const { username, password } = request.body;
+
+      const userFromDB = await getUserByName(username); // this one <-
+
+      const hashedPassword = await generateHashedPassword(password)
+      // db.userssignup.insertOne(data);
+      const result = await createUser({ 
+        username: username,
+        password : hashedPassword
+      });
+      response.send(result);
+      console.log(data);
+    });
+    
+> then create the function getUserByName(username)
+export async function getUserByName(username) {
+  return await client.db('crudApi').collection('signup').findOne({ username: username });
+} -> write this code in signup.service.js
+
+> then import getUserByName in signup.router.js file by asusually delete last letter and add automatically
+it wil appear.    
+
+> then change the code like this... This code will check whether already username is exists and then it also checks the password minimum length.
+
+  router.post("/signup", async function (request, response) {
+      const { username, password } = request.body;
+
+      const userFromDB = await getUserByName(username); // this is data from the api body...
+
+      // const hashedPassword = await generateHashedPassword(password)
+      // // db.userssignup.insertOne(data);
+      // const result = await createUser({ 
+      //   username: username,
+      //   password : hashedPassword
+      // });
+      // response.send(result);
+      console.log(userFromDB);
+
+      if(userFromDB){
+        response.status(400).send({message: 'User already exists'})
+      } else if(password.length < 8){ // this is for the password length must be greater than 8 characters so we have to say less than 8 character means send error msg.
+        response.status(400).send({message: 'Password must be at least 8 characters'});
+      }
+      else {
+           const hashedPassword = await generateHashedPassword(password)
+      
+      const result = await createUser({ 
+        username: username,
+        password : hashedPassword
+      });
+      response.send(result);
+      }
+    });

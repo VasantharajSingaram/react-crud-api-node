@@ -1,0 +1,49 @@
+Notes - 4
+
+Tokens
+----------------------------------------------------------------
+
+> To check the Tokens we are using a feature in the express.
+
+> Create a custom middleware
+
+> Create a folder called middleware.
+
+> Create auth.js file in the middleware folder.
+
+> Write the codes in the auth.js file
+
+export const auth = (request, response, next) => { // auth is the key we will be using in get, put, post
+    const token = request.headers('x-auth-token') // x-auth-token is the token
+    console.log('token', token);
+}
+
+> add auth in router.get("/", auth, async function)
+
+> import the import { auth } from "../middleware/auth.js"; by same method delete the auth h then again type
+it will do the rest.
+
+> write this code
+export const auth = (request, response, next) => {
+    const token = request.header("x-auth-token")
+    console.log("token", token);
+    jwt.verify(token, process.env.SECRET_KEY);
+    next(); // this is to go the next function 
+    
+}
+
+> Next if verify is wrong (seen in postman changing the token words that shows error know) we
+want to send the error message so now we are using javascript try and catch method error
+change the code like this
+
+export const auth = (request, response, next) => {
+    try{ // this is the try catch method
+    const token = request.header("x-auth-token")
+    console.log("token", token);
+    jwt.verify(token, process.env.SECRET_KEY); // checkin the toke in valid or not
+    next(); // this is to go the next function 
+    } catch (err) {
+        response.status(401).send({ message: err.message}); // this is the message from node to the user
+    }
+    
+};
